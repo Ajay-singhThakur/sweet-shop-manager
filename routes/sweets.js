@@ -3,6 +3,20 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const Sweet = require('../models/Sweet');
 
+// @route   GET /api/sweets/featured
+// @desc    Get random sweets for the public home page
+// @access  Public (No auth middleware)
+router.get('/featured', async (req, res) => {
+  try {
+    // Get 3 random sweets using MongoDB aggregation
+    const sweets = await Sweet.aggregate([{ $sample: { size: 3 } }]);
+    res.json(sweets);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 // @route   POST /api/sweets
 // @desc    Add a new sweet
 // @access  Private
